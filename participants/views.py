@@ -27,10 +27,10 @@ class ParticipantViewSet(viewsets.ModelViewSet):
         metadata = serializer.validated_data.get("metadata", None)        
 
         participant = ParticipantService.create_or_update_participant(
-            competition,
-            external_id,
-            display_name,
-            metadata,
+            competition=competition,
+            external_id=external_id,
+            display_name=display_name,
+            metadata=metadata,
         )
         response_serializer = self.get_serializer(participant)
 
