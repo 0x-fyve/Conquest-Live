@@ -38,15 +38,15 @@ class ScoreEventService():
 
             return existing
         
-        else:
-            score_event = ScoreEvent.objects.create(
-                event_id=event_id,
-                competition=competition,
-                participant=participant,
-                points=points,
-                reason=reason,
-                metadata=metadata
-            )
-            return score_event
+        
+        score_event = ScoreEvent.objects.create(
+            event_id=event_id,
+            competition=competition,
+            participant=participant,
+            points=points,
+            reason=reason,
+            metadata=metadata
+        )
+        return score_event
 
   
