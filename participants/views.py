@@ -4,6 +4,7 @@ from .serializers import ParticipantSerializer
 from .services import ParticipantService
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import viewsets, status
+from rest_framework.response import Response
 
 # Create your views here.
 class ParticipantViewSet(viewsets.ModelViewSet):
@@ -15,8 +16,13 @@ class ParticipantViewSet(viewsets.ModelViewSet):
         serializer.is_valid(raise_exception=True)
 
         competition = serializer.validated_data.get("competition")
+        if competition.project.owner != self.request.user:
+            return Response(
+                {"error": "You do not own this competition."},
+                status=status.HTTP_403_FORBIDDEN,
+            )
 
-        external_id = serializer.validated_data,get("external_id")
+        external_id = serializer.validated_data.get("external_id")
         display_name = serializer.validated_data.get("display_name")
         metadata = serializer.validated_data.get("metadata", None)        
 
