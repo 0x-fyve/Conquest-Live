@@ -52,7 +52,8 @@ INSTALLED_APPS = [
     'competitions',
     "projects",
     "api_keys",
-    "core",  
+    "core", 
+    'participants', 
 ]
 
 MIDDLEWARE = [
