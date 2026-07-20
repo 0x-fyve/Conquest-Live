@@ -25,3 +25,10 @@ class CompetitionSerializer(serializers.ModelSerializer):
             "created_at",
             "updated_at"
         )
+
+class LeaderboardEntrySerializer(serializers.Serializer):
+    rank = serializers.IntegerField()
+    participant_id = serializers.UUIDField(source="id")
+    display_name = serializers.CharField()
+    total_score = serializers.IntegerField()
+          
