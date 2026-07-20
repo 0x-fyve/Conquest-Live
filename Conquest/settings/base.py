@@ -54,6 +54,9 @@ INSTALLED_APPS = [
     "api_keys",
     "core", 
     'participants', 
+    "scoreevents",
+    'rest_framework',
+    'rest_framework_simplejwt',
 ]
 
 MIDDLEWARE = [
