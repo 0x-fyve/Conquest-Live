@@ -61,7 +61,7 @@ class CompetitionViewSet(viewsets.ModelViewSet):
             total_score=Coalesce(
                 Sum("scoreevents__points"),
                 0
-            )).order_by("-total_score")
+            )).order_by("-total_score", "display_name")
         
         for index, participant in enumerate(query, start=1):
             participant.rank = index
