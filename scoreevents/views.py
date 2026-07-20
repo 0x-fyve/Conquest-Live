@@ -22,6 +22,12 @@ class ScoreEventViewSet(viewsets.ModelViewSet):
                 {"error": "You do not own this competition."},
                 status=status.HTTP_403_FORBIDDEN,
             )
+        if participant.competition != competition:
+            return Response(
+                {"error": "Participant does not belong to this competition."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        
         participant = serializer.validated_data.get("participant")
 
 

@@ -25,5 +25,4 @@ urlpatterns = [
     path("api/competitions/", include('competitions.urls')),
     path("api/participants/", include('participants.urls')),
     path("api/scoreevents/", include('scoreevents.urls')),
-    
 ]
