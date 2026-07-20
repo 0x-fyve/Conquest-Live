@@ -63,6 +63,9 @@ class CompetitionViewSet(viewsets.ModelViewSet):
                 0
             )).order_by("-total_score")
         
-        return Response(
-            {"leaderboard": query.values("Participant.display_name", "total_score")}, status=status.HTTP_200_OK
-        )
+        for index, participant in enumerate(query, start=1):
+            participant.rank = index
+
+        serializer = LeaderboardEntrySerializer(query, many=True)
+        
+        return Response(serializer.data, status=status.HTTP_200_OK)
