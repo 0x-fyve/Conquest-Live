@@ -17,6 +17,7 @@ class ScoreEventViewSet(viewsets.ModelViewSet):
 
         event_id = serializer.validated_data.get("event_id")
         competition = serializer.validated_data.get("competition")
+        participant = serializer.validated_data.get("participant")
         if competition.project.owner != self.request.user:
             return Response(
                 {"error": "You do not own this competition."},
@@ -28,9 +29,6 @@ class ScoreEventViewSet(viewsets.ModelViewSet):
                 status=status.HTTP_400_BAD_REQUEST,
             )
         
-        participant = serializer.validated_data.get("participant")
-
-
         points = serializer.validated_data.get("points")
         reason = serializer.validated_data.get("reason", "")
         metadata = serializer.validated_data.get("metadata", None)
