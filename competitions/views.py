@@ -3,7 +3,7 @@ from rest_framework import viewsets, status
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from .models import Competition
-from .serializers import CompetitionSerializer
+from .serializers import CompetitionSerializer, LeaderboardEntrySerializer
 from .services import CompetitionService
 from rest_framework.decorators import action
 from participants.models import Participant
