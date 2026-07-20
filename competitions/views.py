@@ -5,6 +5,10 @@ from rest_framework.permissions import IsAuthenticated
 from .models import Competition
 from .serializers import CompetitionSerializer
 from .services import CompetitionService
+from rest_framework.decorators import action
+from participants.models import Participant
+from django.db.models import Sum
+from django.db.models.functions import Coalesce
 # Create your views here.
 
 class CompetitionViewSet(viewsets.ModelViewSet):
@@ -41,3 +45,24 @@ class CompetitionViewSet(viewsets.ModelViewSet):
         response_serializer = self.get_serializer(competition)
 
         return Response(response_serializer.data, status=status.HTTP_201_CREATED)
+    
+    @action(detail=True, methods=["get"])
+    def leaderboard(self, request, pk=None):
+        competition = self.get_object()
+
+        if competition.project.owner != self.request.user:
+            return Response(
+                {"error": "You do not own this competition."},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+        
+        query = Participant.objects.filter(
+            competition=competition).annotate(
+            total_score=Coalesce(
+                Sum("scoreevents__points"),
+                0
+            )).order_by("-total_score")
+        
+        return Response(
+            {"leaderboard": query.values("Participant.display_name", "total_score")}, status=status.HTTP_200_OK
+        )
