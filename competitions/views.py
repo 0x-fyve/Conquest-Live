@@ -17,6 +17,7 @@ class CompetitionViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         return Competition.objects.filter(project__owner=self.request.user)
+        
     
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=self.request.data)
@@ -68,4 +69,14 @@ class CompetitionViewSet(viewsets.ModelViewSet):
 
         serializer = LeaderboardEntrySerializer(query, many=True)
         
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    @action(detail=True, methods=["get"])
+    def project(self, request, pk=None):
+        project = self.get_object()
+
+        query = Competition.objects.filter(project=project.project).order_by("-created_at")
+
+        serializer = CompetitionSerializer(query, many=True)
+
         return Response(serializer.data, status=status.HTTP_200_OK)
