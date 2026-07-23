@@ -71,12 +71,4 @@ class CompetitionViewSet(viewsets.ModelViewSet):
         
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-    @action(detail=True, methods=["get"])
-    def project(self, request, pk=None):
-        project = self.get_object()
-
-        query = Competition.objects.filter(project=project.project).order_by("-created_at")
-
-        serializer = CompetitionSerializer(query, many=True)
-
-        return Response(serializer.data, status=status.HTTP_200_OK)
+    
