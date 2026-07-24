@@ -7,6 +7,7 @@ from rest_framework import viewsets, status
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from scoreevents.serializers import ScoreEventSerializer
+from scoreevents.models import ScoreEvent
 
 # Create your views here.
 class ParticipantViewSet(viewsets.ModelViewSet):
@@ -51,7 +52,7 @@ class ParticipantViewSet(viewsets.ModelViewSet):
                 status=status.HTTP_403_FORBIDDEN,
             )
 
-        query = participant.score_events.all().order_by("-created_at")
+        query = ScoreEvent.objects.filter(participant=participant.id).order_by("-created_at")
 
         serializer = ScoreEventSerializer(query, many=True)
 

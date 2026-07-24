@@ -9,6 +9,7 @@ from rest_framework.decorators import action
 from participants.models import Participant
 from django.db.models import Sum
 from django.db.models.functions import Coalesce
+from scoreevents.serializers import ScoreEventSerializer
 # Create your views here.
 
 class CompetitionViewSet(viewsets.ModelViewSet):
@@ -70,4 +71,6 @@ class CompetitionViewSet(viewsets.ModelViewSet):
         serializer = LeaderboardEntrySerializer(query, many=True)
         
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
 
