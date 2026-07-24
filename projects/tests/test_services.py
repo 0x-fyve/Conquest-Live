@@ -1,5 +1,3 @@
-from django.test import TestCase
-
 # Create your tests here.
 from django.contrib.auth import get_user_model
 from django.test import TestCase
@@ -8,7 +6,6 @@ from projects.models import Project
 from projects.services import ProjectService
 
 User = get_user_model()
-
 
 class ProjectServiceTests(TestCase):
 
@@ -23,11 +20,12 @@ class ProjectServiceTests(TestCase):
         # Act
         project = ProjectService.create_project(
             owner=user,
-            name="Zombie Wars"
+            name="Tenski live"
         )
 
         # Assert
-        self.assertEqual(Project.objects.count(), 1)
+        self.assertTrue(Project.objects.filter(id=project.id).exists())
         self.assertEqual(project.owner, user)
-        self.assertEqual(project.name, "Zombie Wars")
-        self.assertEqual(project.slug, "zombie-wars")
+        self.assertEqual(project.name, "Tenski live")
+        self.assertEqual(project.slug, "tenski-live")
+        self.assertEqual(project.description, "")
