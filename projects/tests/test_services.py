@@ -8,8 +8,7 @@ from projects.services import ProjectService
 User = get_user_model()
 
 class ProjectServiceTests(TestCase):
-
-
+    
     def setUp(self):
         self.user = User.objects.create_user(
             username="david",
