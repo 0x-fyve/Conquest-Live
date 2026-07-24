@@ -9,42 +9,38 @@ User = get_user_model()
 
 class ProjectServiceTests(TestCase):
 
-    def test_create_project_successfully(self):
-        # Arrange
-        user = User.objects.create_user(
+
+    def setUp(self):
+        self.user = User.objects.create_user(
             username="david",
             email="david@example.com",
             password="password123"
         )
 
+    def test_create_project_successfully(self):
+
         # Act
         project = ProjectService.create_project(
-            owner=user,
+            owner=self.user,
             name="Tenski live"
         )
 
         # Assert
         self.assertTrue(Project.objects.filter(id=project.id).exists())
-        self.assertEqual(project.owner, user)
+        self.assertEqual(project.owner, self.user)
         self.assertEqual(project.name, "Tenski live")
         self.assertEqual(project.slug, "tenski-live")
         self.assertEqual(project.description, "")
 
     def test_generates_unique_slug(self):
 
-        user = User.objects.create_user(
-            username="david",
-            email="david@example.com",
-            password="password123"
-        )
-
         project1 = ProjectService.create_project(
-            owner=user,
+            owner=self.user,
             name="Conquest"
         )
 
         project2 = ProjectService.create_project(
-            owner=user,
+            owner=self.user,
             name="Conquest"
         )
 
