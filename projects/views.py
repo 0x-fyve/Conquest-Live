@@ -5,6 +5,9 @@ from .serializers import ProjectSerializer
 from .services import ProjectService
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.decorators import action
+from competitions.models import Competition
+from competitions.serializers import CompetitionSerializer
 
 # Create your views here.
 
@@ -27,4 +30,14 @@ class ProjectViewSet(viewsets.ModelViewSet):
         response_serializer = self.get_serializer(project)
 
         return Response(response_serializer.data, status=status.HTTP_201_CREATED,)
+
+    @action(detail=True, methods=["get"])
+    def competitions(self, request, pk=None):
+        project = self.get_object()
+
+        query = Competition.objects.filter(project=project.id).order_by("-created_at")
+
+        serializer = CompetitionSerializer(query, many=True)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
