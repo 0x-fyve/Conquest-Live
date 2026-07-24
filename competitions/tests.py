@@ -3,6 +3,9 @@ from django.contrib.auth import get_user_model
 from .models import Competition
 from .services import CompetitionService
 from projects.services import ProjectService
+from rest_framework.exceptions import ValidationError
+from datetime import timedelta
+from django.utils import timezone
 
 User = get_user_model()
 
@@ -34,3 +37,22 @@ class CompetitionServiceTest(TestCase):
         self.assertEqual(competition.description, "")
         self.assertEqual(competition.rules, {})
         self.assertEqual(competition.status, "DRAFT")
+
+    def test_rejects_invalid_dates(self):
+        
+
+        starts_at = timezone.now()
+        ends_at = starts_at - timedelta(days=1)
+
+        with self.assertRaises(ValidationError) as context:
+            CompetitionService.create_competition(
+                project=self.project,
+                name="Tenski main",
+                starts_at=starts_at,
+                ends_at=ends_at
+            )
+
+        self.assertEqual(
+            context.exception.detail["ends_at"][0],
+            "End date must be after the start date."
+        )
