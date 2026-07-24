@@ -5,6 +5,7 @@ from .services import ParticipantService
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import viewsets, status
 from rest_framework.response import Response
+from rest_framework.decorators import action
 
 # Create your views here.
 class ParticipantViewSet(viewsets.ModelViewSet):
@@ -38,3 +39,19 @@ class ParticipantViewSet(viewsets.ModelViewSet):
     
     def get_queryset(self):
         return Participant.objects.filter(competition__project__owner=self.request.user)
+
+    @action(detail=True, methods=["get"])
+    def scoreevents(self, request, pk=None):
+        participant = self.get_object()
+
+        if participant.competition.project.owner != self.request.user:
+            return Response(
+                {"error": "You do not own this participant."},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
+        query = participant.score_events.all().order_by("-created_at")
+
+        serializer = ScoreEventSerializer(query, many=True)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)

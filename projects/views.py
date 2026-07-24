@@ -35,6 +35,14 @@ class ProjectViewSet(viewsets.ModelViewSet):
     def competitions(self, request, pk=None):
         project = self.get_object()
 
+        if project.owner != self.request.user:
+            return Response(
+                {"error": "You do not own this project."},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+        
+        project = self.get_object()
+
         query = Competition.objects.filter(project=project.id).order_by("-created_at")
 
         serializer = CompetitionSerializer(query, many=True)
