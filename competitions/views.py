@@ -7,10 +7,12 @@ from .serializers import CompetitionSerializer, LeaderboardEntrySerializer
 from .services import CompetitionService
 from rest_framework.decorators import action
 from participants.models import Participant
+from participants.serializers import ParticipantSerializer
 from django.db.models import Sum
 from django.db.models.functions import Coalesce
 from scoreevents.serializers import ScoreEventSerializer
 from scoreevents.models import ScoreEvent
+
 # Create your views here.
 
 class CompetitionViewSet(viewsets.ModelViewSet):
@@ -71,6 +73,22 @@ class CompetitionViewSet(viewsets.ModelViewSet):
 
         serializer = LeaderboardEntrySerializer(query, many=True)
         
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    @action(detail=True, methods=["get"])
+    def participants(self, request, pk=None):
+        competition = self.get_object()
+
+        if competition.project.owner != self.request.user:
+            return Response(
+                {"error": "You do not own this competition."},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
+        query = Participant.objects.filter(competition=competition.id).order_by("display_name")
+
+        serializer = ParticipantSerializer(query, many=True)
+
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     @action(detail=True, methods=["get"])
