@@ -10,6 +10,7 @@ from participants.models import Participant
 from django.db.models import Sum
 from django.db.models.functions import Coalesce
 from scoreevents.serializers import ScoreEventSerializer
+from scoreevents.models import ScoreEvent
 # Create your views here.
 
 class CompetitionViewSet(viewsets.ModelViewSet):
@@ -72,5 +73,19 @@ class CompetitionViewSet(viewsets.ModelViewSet):
         
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+    @action(detail=True, methods=["get"])
+    def scoreevents(self, request, pk=None):
+        competition = self.get_object()
 
+        if competition.project.owner != self.request.user:
+            return Response(
+                {"error": "You do not own this competition."},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
+        query = ScoreEvent.objects.filter(competition=competition.id).order_by("-created_at")
+
+        serializer = ScoreEventSerializer(query, many=True)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
