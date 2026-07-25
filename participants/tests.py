@@ -48,5 +48,27 @@ class ParticipantServiceTests(TestCase):
         self.assertEqual(self.participant.competition, self.competition)
         self.assertEqual(self.participant.metadata, self.metadata)
 
+    def test_updates_existing_participant(self):
+        new_display_name = "dave"
+        new_metadata = {
+            "avatar": "yyyyy"
+        }
+
+        updated_participant = ParticipantService.create_or_update_participant(
+            external_id=self.external_id,
+            display_name=new_display_name,
+            competition=self.competition,
+            metadata=new_metadata
+        )
+        updated_participant.refresh_from_db()
+
+        self.assertEqual(Participant.objects.count(), 1)
+        self.assertEqual(updated_participant.id, self.participant.id)
+        self.assertEqual(updated_participant.display_name, new_display_name)
+        self.assertEqual(updated_participant.metadata, new_metadata)
+        self.assertEqual(updated_participant.external_id, self.external_id)
+        self.assertEqual(updated_participant.competition, self.competition)
+
+
     
     
