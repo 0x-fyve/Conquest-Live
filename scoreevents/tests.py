@@ -6,6 +6,7 @@ from participants.services import ParticipantService
 from .services import ScoreEventService
 from.models import ScoreEvent
 from rest_framework.exceptions import ValidationError
+import uuid
 
 User = get_user_model()
 # Create your tests here.
@@ -81,6 +82,27 @@ class ScoreEventServiceTests(TestCase):
             context.exception.detail["event_id"][0],
             "This event_id has already been used with different data."
         )
+
+    def test_reject_participant_from_different_competition(self):
+        other_competition = CompetitionService.create_competition(
+            project=self.project,
+            name="Season 2"
+        )
+
+        with self.assertRaises(ValidationError) as context:
+            ScoreEventService.record_score(
+                event_id = uuid.uuid4(),
+                competition = other_competition,
+                participant = self.participant,
+                points = 50,
+                reason = self.reason,
+            )
+                    
+        self.assertEqual(
+            context.exception.detail["participant"][0],
+            "Participant does not belong to this competition."  
+        )
+
 
  
 
