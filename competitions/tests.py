@@ -40,7 +40,6 @@ class CompetitionServiceTest(TestCase):
 
     def test_rejects_invalid_dates(self):
         
-
         starts_at = timezone.now()
         ends_at = starts_at - timedelta(days=1)
 
