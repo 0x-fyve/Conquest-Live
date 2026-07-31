@@ -69,7 +69,7 @@ class ParticipantViewSet(viewsets.ModelViewSet):
                 status=status.HTTP_403_FORBIDDEN,
             )
 
-        score = Participant.objects.filter(participant=participant.id).annotate(
+        score = ScoreEvent.objects.filter(participant=participant.id).annotate(
             total_score=Coalesce(Sum("scoreevents__points"), 0))
 
         query = Participant.objects.filter(
@@ -93,7 +93,7 @@ class ParticipantViewSet(viewsets.ModelViewSet):
             "rank": specific_participant.id,
             "score": score
         }
-        
+
         return Response(rank_data, status=status.HTTP_200_OK)
 
 
