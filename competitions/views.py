@@ -124,15 +124,15 @@ class CompetitionViewSet(viewsets.ModelViewSet):
 
         total_participants = Participant.objects.filter(competition=competition.id).count()
 
-        First = Participant.objects.filter(competition=competition.id).annotate(
+        first = Participant.objects.filter(competition=competition.id).annotate(
             total_score=Coalesce(Sum("scoreevents__points"), 0)
         ).order_by("-total_score", "display_name").first()
 
-
+        first.rank = 1 if first else None
         summary_data = {
             "total_participants": total_participants,
             "total_score": total_score,
-            "first_place": LeaderboardEntrySerializer(First).data if First else None,
+            "first_place": LeaderboardEntrySerializer(first).data if first else None,
             "status": competition.status,
         }
 
