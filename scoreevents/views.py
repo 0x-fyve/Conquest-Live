@@ -5,8 +5,10 @@ from .services import ScoreEventService
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import viewsets, status
 from rest_framework.response import Response
+from drf_spectacular.utils import extend_schema
 
 # Create your views here.
+@extend_schema(tags=["Score Events"])
 class ScoreEventViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     serializer_class = ScoreEventSerializer

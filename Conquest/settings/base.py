@@ -53,6 +53,21 @@ Built with Django REST Framework.
 """,
     "VERSION": "1.0.0",
     "SERVE_INCLUDE_SCHEMA": False,
+
+    "SECURITY": [
+        {
+            "BearerAuth": []
+        }
+    ],
+    "COMPONENTS": {
+        "securitySchemes": {
+            "BearerAuth": {
+                "type": "http",
+                "scheme": "bearer",
+                "bearerFormat": "JWT",
+            }
+        }
+    },
 }
 
 REST_FRAMEWORK = {

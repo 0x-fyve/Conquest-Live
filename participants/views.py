@@ -8,8 +8,10 @@ from rest_framework.response import Response
 from rest_framework.decorators import action
 from scoreevents.serializers import ScoreEventSerializer
 from scoreevents.models import ScoreEvent
+from drf_spectacular.utils import extend_schema
 
 # Create your views here.
+@extend_schema(tags=["Participants"])
 class ParticipantViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     serializer_class = ParticipantSerializer
