@@ -132,7 +132,8 @@ class CompetitionViewSet(viewsets.ModelViewSet):
         summary_data = {
             "total_participants": total_participants,
             "total_score": total_score,
-            "first_place": LeaderboardEntrySerializer(first).data if first else None,
+            if first:
+                "first_place": LeaderboardEntrySerializer(first).data
             "status": competition.status,
         }
 
