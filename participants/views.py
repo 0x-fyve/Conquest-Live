@@ -53,9 +53,52 @@ class ParticipantViewSet(viewsets.ModelViewSet):
                 {"error": "You do not own this participant."},
                 status=status.HTTP_403_FORBIDDEN,
             )
-
         query = ScoreEvent.objects.filter(participant=participant.id).order_by("-created_at")
 
         serializer = ScoreEventSerializer(query, many=True)
 
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+    @action(detail=True, methods=["get"])
+    def ranking(self, request, pk=None):
+        participant = self.get_object()
+
+        if participant.competition.project.owner != self.request.user:
+            return Response(
+                {"error": "You do not own this participant."},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
+        score = Participant.objects.filter(participant=participant.id).annotate(
+            total_score=Coalesce(Sum("scoreevents__points"), 0))
+
+        query = Participant.objects.filter(
+            competition=competition).annotate(
+            total_score=Coalesce(
+                Sum("scoreevents__points"),
+                 0
+            )).order_by("-total_score", "display_name")
+                
+        for index, participant in enumerate(query, start=1):
+                    participant.rank = index
+
+        target_id = participant.id 
+
+        specific_participant = next(
+            (p for p in participants_list if p.id == target_id), 
+            None  
+        )
+
+        rank_data = {
+            "rank": specific_participant.id,
+            "score": score
+        }
+        
+        return Response(rank_data, status=status.HTTP_200_OK)
+
+
+        
+
+        
+
+                
