@@ -9,6 +9,8 @@ from rest_framework.decorators import action
 from scoreevents.serializers import ScoreEventSerializer
 from scoreevents.models import ScoreEvent
 from drf_spectacular.utils import extend_schema
+from django.db.models.functions import Coalesce
+from django.db.models import Sum
 
 # Create your views here.
 @extend_schema(tags=["Participants"])
@@ -69,14 +71,15 @@ class ParticipantViewSet(viewsets.ModelViewSet):
                 status=status.HTTP_403_FORBIDDEN,
             )
 
-        score = ScoreEvent.objects.filter(participant=participant.id).annotate(
-            total_score=Coalesce(Sum("scoreevents__points"), 0))
+        score = ScoreEvent.objects.filter(participant=participant.id).aggregate(
+            total_score=Coalesce(Sum("points"), 0)
+        )
 
         query = Participant.objects.filter(
-            competition=competition).annotate(
+            competition=participant.competition).annotate(
             total_score=Coalesce(
                 Sum("scoreevents__points"),
-                 0
+                0
             )).order_by("-total_score", "display_name")
                 
         for index, participant in enumerate(query, start=1):
@@ -85,12 +88,12 @@ class ParticipantViewSet(viewsets.ModelViewSet):
         target_id = participant.id 
 
         specific_participant = next(
-            (p for p in participants_list if p.id == target_id), 
+            (p for p in query if p.id == target_id), 
             None  
         )
 
         rank_data = {
-            "rank": specific_participant.id,
+            "rank": specific_participant.rank if specific_participant else None,
             "score": score
         }
 

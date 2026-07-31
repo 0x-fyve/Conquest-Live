@@ -27,7 +27,8 @@ SECRET_KEY = 'django-insecure-!!pje*)-j)komanzrfdbz^6rt@0^r^ct!48h7j^o4kb&o5+#51
 DEBUG = True
 
 ALLOWED_HOSTS = [
-    'conquest-live.up.railway.app'
+    'conquest-live.up.railway.app',
+    '127.0.0.1'
 ]
 
 
