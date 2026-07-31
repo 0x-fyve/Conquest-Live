@@ -108,3 +108,33 @@ class CompetitionViewSet(viewsets.ModelViewSet):
 
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+    @action(detail=True, methods=["get"])
+    def summary(self, request, pk=None):
+        competition = self.get_object()
+
+        if competition.project.owner != self.request.user:
+            return Response(
+                {"error": "You do not own this competition."},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
+        total_score = ScoreEvent.objects.filter(competition=competition.id).aggregate(
+            total_score=Coalesce(Sum("points"), 0)
+        )["total_score"]
+
+        total_participants = Participant.objects.filter(competition=competition.id).count()
+
+        First = Participant.objects.filter(competition=competition.id).annotate(
+            total_score=Coalesce(Sum("scoreevents__points"), 0)
+        ).order_by("-total_score", "display_name").first()
+
+
+        summary_data = {
+            "total_participants": total_participants,
+            "total_score": total_score,
+            "first_place": LeaderboardEntrySerializer(First).data if First else None,
+            "status": competition.status,
+        }
+
+        return Response(summary_data, status=status.HTTP_200_OK)
+
