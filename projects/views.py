@@ -8,10 +8,11 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import action
 from competitions.models import Competition
 from competitions.serializers import CompetitionSerializer
+from drf_spectacular.utils import extend_schema
 
 # Create your views here.
 
-
+@extend_schema(tags=["Projects"])
 class ProjectViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     serializer_class = ProjectSerializer

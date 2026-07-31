@@ -12,9 +12,10 @@ from django.db.models import Sum
 from django.db.models.functions import Coalesce
 from scoreevents.serializers import ScoreEventSerializer
 from scoreevents.models import ScoreEvent
+from drf_spectacular.utils import extend_schema
 
 # Create your views here.
-
+@extend_schema(tags=["Competitions"])
 class CompetitionViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     serializer_class = CompetitionSerializer

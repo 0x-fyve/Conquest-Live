@@ -30,11 +30,38 @@ ALLOWED_HOSTS = []
 
 
 # Application definition
+
+SPECTACULAR_SETTINGS = {
+    "TITLE": "Conquest API",
+    "DESCRIPTION": """
+A scalable competition and leaderboard management API.
+
+Conquest allows developers to create projects, manage competitions,
+register participants, record score events, and generate real-time
+leaderboards.
+
+### Features
+
+- Project Management
+- Competition Management
+- Participant Management
+- Score Event Recording
+- Real-time Leaderboards
+- JWT Authentication
+
+Built with Django REST Framework.
+""",
+    "VERSION": "1.0.0",
+    "SERVE_INCLUDE_SCHEMA": False,
+}
+
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "rest_framework_simplejwt.authentication.JWTAuthentication",
+        
     ),
-}
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+} 
 from datetime import timedelta
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(days=7),
@@ -57,6 +84,7 @@ INSTALLED_APPS = [
     "scoreevents",
     'rest_framework',
     'rest_framework_simplejwt',
+    "drf_spectacular",
 ]
 
 MIDDLEWARE = [
