@@ -6,6 +6,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework import viewsets, status
 from rest_framework.response import Response
 from drf_spectacular.utils import extend_schema
+from rest_framework.decorators import action
 
 # Create your views here.
 @extend_schema(tags=["Score Events"])
@@ -51,6 +52,46 @@ class ScoreEventViewSet(viewsets.ModelViewSet):
         return ScoreEvent.objects.filter(
             competition__project__owner=self.request.user
         )
+
+    @action(detail=False, methods=["post"])
+    def bulk(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=self.request.data, many=True)
+        serializer.is_valid(raise_exception=True)
+
+        score_events_data = serializer.validated_data
+        created_score_events = []
+
+        for score_event_data in score_events_data:
+            event_id = score_event_data.get("event_id")
+            competition = score_event_data.get("competition")
+            participant = score_event_data.get("participant")
+            points = score_event_data.get("points")
+            reason = score_event_data.get("reason", "")
+            metadata = score_event_data.get("metadata", None)
+
+            if competition.project.owner != self.request.user:
+                return Response(
+                    {"error": "You do not own this competition."},
+                    status=status.HTTP_403_FORBIDDEN,
+                )
+            if participant.competition != competition:
+                return Response(
+                    {"error": "Participant does not belong to this competition."},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+
+            score_event = ScoreEventService.record_score(
+                event_id=event_id,
+                competition=competition,
+                participant=participant,
+                points=points,
+                reason=reason,
+                metadata=metadata
+            )
+            created_score_events.append(score_event)
+
+        response_serializer = self.get_serializer(created_score_events, many=True)
+        return Response(response_serializer.data, status=status.HTTP_201_CREATED)
 
         
         
