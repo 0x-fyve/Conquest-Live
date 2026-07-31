@@ -128,12 +128,11 @@ class CompetitionViewSet(viewsets.ModelViewSet):
             total_score=Coalesce(Sum("scoreevents__points"), 0)
         ).order_by("-total_score", "display_name").first()
 
-        first.rank = 1
+        first.rank = 1 
         summary_data = {
             "total_participants": total_participants,
             "total_score": total_score,
-            if first:
-                "first_place": LeaderboardEntrySerializer(first).data
+            "first_place": LeaderboardEntrySerializer(first).data if first else "",
             "status": competition.status,
         }
 
