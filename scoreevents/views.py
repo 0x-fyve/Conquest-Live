@@ -8,15 +8,23 @@ from rest_framework.response import Response
 from drf_spectacular.utils import extend_schema
 from rest_framework.decorators import action
 from django_filters.rest_framework import DjangoFilterBackend
-
+from rest_framework.filters import SearchFilter, OrderingFilter
 # Create your views here.
 @extend_schema(tags=["Score Events"])
 class ScoreEventViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     serializer_class = ScoreEventSerializer
 
-    filter_backends = [DjangoFilterBackend]
+    filter_backends = [
+        DjangoFilterBackend,
+        SearchFilter,
+        OrderingFilter,
+    ]
     filterset_fields = ["competition", "participant"]
+
+    search_fields = ["reason"]
+    
+    ordering_fields = ["created_at", "points"]
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=self.request.data)
