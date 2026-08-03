@@ -7,12 +7,16 @@ from rest_framework import viewsets, status
 from rest_framework.response import Response
 from drf_spectacular.utils import extend_schema
 from rest_framework.decorators import action
+from django_filters.rest_framework import DjangoFilterBackend
 
 # Create your views here.
 @extend_schema(tags=["Score Events"])
 class ScoreEventViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     serializer_class = ScoreEventSerializer
+
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ["competition", "participant"]
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=self.request.data)
@@ -49,6 +53,8 @@ class ScoreEventViewSet(viewsets.ModelViewSet):
         return Response(response_serializer.data, status=status.HTTP_201_CREATED)
     
     def get_queryset(self):
+        
+
         return ScoreEvent.objects.filter(
             competition__project__owner=self.request.user
         )
